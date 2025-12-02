@@ -2,7 +2,7 @@ from data import ACTIVITIES, ROOMS, TIMES
 from schedule_repr import print_schedule, Schedule
 from fitness import compute_schedule_fitness
 from ga_core import run_ga
-from fitness import compute_schedule_fitness
+
 
 def main():
     print("=== SLA Genetic Scheduler ===")
@@ -16,7 +16,7 @@ def main():
     sample_activities = list(ACTIVITIES.keys())[:5]
     print(f"- Sample activities: {sample_activities}\n")
 
-    # --- Construct a tiny sample schedule just for testing the representation ---
+    # --- Sample schedule just for testing printing & fitness ---
     sample_schedule: Schedule = {
         "SLA101A": {"room": "Frank 119", "time": "10 AM", "facilitator": "Glen"},
         "SLA101B": {"room": "Roman 201", "time": "11 AM", "facilitator": "Banks"},
@@ -34,17 +34,36 @@ def main():
     print("\nSample schedule (ordered by time, first 6 activities):")
     print_schedule(sample_schedule, order_by="time", max_activities=6)
 
-        # --- Compute fitness for the sample schedule (for testing) ---
+    # --- Compute fitness for the sample schedule (for testing) ---
     sample_fitness = compute_schedule_fitness(sample_schedule)
     print(f"\nFitness of sample schedule: {sample_fitness:.3f}")
- # --- Run the genetic algorithm on a full population ---
+
+    # --- Run the genetic algorithm on a population (debug-sized) ---
     print("\n=== Running genetic algorithm ===")
-    # You can tweak these parameters later if needed.
     best_schedule, best_fitness, history = run_ga(
-        population_size=300,
-        mutation_rate=0.01,
-        min_generations=100,
-        max_generations=300,
-        rng_seed=42,)
+        population_size=80,    # smaller for quick debugging
+        mutation_rate=0.05,    # slightly higher for diversity
+        min_generations=20,    # fewer generations for quick run
+        max_generations=40,    # hard cap
+        rng_seed=42,
+    )
+
+    print(f"\nGA finished after {len(history)} generations.")
+    print(f"Best fitness in final generation: {best_fitness:.3f}")
+
+    print("\nBest schedule (first 6 activities, ordered by time):")
+    print_schedule(best_schedule, order_by="time", max_activities=6)
+
+    print("\nLast 5 generations (best / avg / worst / improvement%):")
+    for entry in history[-5:]:
+        print(
+            f"Gen {entry['generation']:3d} | "
+            f"best={entry['best_fitness']:.3f}, "
+            f"avg={entry['avg_fitness']:.3f}, "
+            f"worst={entry['worst_fitness']:.3f}, "
+            f"improv={entry['improvement_percent']:.2f}%"
+        )
+
+
 if __name__ == "__main__":
     main()
