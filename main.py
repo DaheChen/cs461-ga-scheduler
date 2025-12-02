@@ -45,6 +45,6 @@ def main():
         mutation_rate=0.01,
         min_generations=100,
         max_generations=300,
-        rng_seed=42,
+        rng_seed=42,)
 if __name__ == "__main__":
     main()
