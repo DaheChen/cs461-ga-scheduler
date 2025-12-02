@@ -1,6 +1,8 @@
 from data import ACTIVITIES, ROOMS, TIMES
 from schedule_repr import print_schedule, Schedule
 from fitness import compute_schedule_fitness
+from ga_core import run_ga
+from fitness import compute_schedule_fitness
 
 def main():
     print("=== SLA Genetic Scheduler ===")
@@ -35,6 +37,14 @@ def main():
         # --- Compute fitness for the sample schedule (for testing) ---
     sample_fitness = compute_schedule_fitness(sample_schedule)
     print(f"\nFitness of sample schedule: {sample_fitness:.3f}")
-
+ # --- Run the genetic algorithm on a full population ---
+    print("\n=== Running genetic algorithm ===")
+    # You can tweak these parameters later if needed.
+    best_schedule, best_fitness, history = run_ga(
+        population_size=300,
+        mutation_rate=0.01,
+        min_generations=100,
+        max_generations=300,
+        rng_seed=42,
 if __name__ == "__main__":
     main()
