@@ -2,6 +2,7 @@ from data import ACTIVITIES, ROOMS, TIMES
 from schedule_repr import print_schedule, Schedule
 from fitness import compute_schedule_fitness
 from ga_core import run_ga
+import csv
 
 
 def main():
@@ -63,6 +64,27 @@ def main():
             f"worst={entry['worst_fitness']:.3f}, "
             f"improv={entry['improvement_percent']:.2f}%"
         )
+    # --- Export fitness history to CSV for further analysis ---
+    with open("fitness_history.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        # Header
+        writer.writerow(
+            ["generation", "best_fitness", "avg_fitness", "worst_fitness", "improvement_percent", "mutation_rate"]
+        )
+        # Rows
+        for entry in history:
+            writer.writerow(
+                [
+                    entry["generation"],
+                    entry["best_fitness"],
+                    entry["avg_fitness"],
+                    entry["worst_fitness"],
+                    entry["improvement_percent"],
+                    entry["mutation_rate"],
+                ]
+            )
+
+    print('\nFitness history exported to "fitness_history.csv".')
 
 
 if __name__ == "__main__":
