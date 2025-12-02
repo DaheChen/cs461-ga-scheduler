@@ -1,6 +1,6 @@
 from data import ACTIVITIES, ROOMS, TIMES
 from schedule_repr import print_schedule, Schedule
-
+from fitness import compute_schedule_fitness
 
 def main():
     print("=== SLA Genetic Scheduler ===")
@@ -32,6 +32,9 @@ def main():
     print("\nSample schedule (ordered by time, first 6 activities):")
     print_schedule(sample_schedule, order_by="time", max_activities=6)
 
+        # --- Compute fitness for the sample schedule (for testing) ---
+    sample_fitness = compute_schedule_fitness(sample_schedule)
+    print(f"\nFitness of sample schedule: {sample_fitness:.3f}")
 
 if __name__ == "__main__":
     main()
