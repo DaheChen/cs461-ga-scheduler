@@ -1,0 +1,14 @@
+Best schedule (ordered by time):
+Activity    Time   Room        Facilitator  Enroll
+----------  -----  ----------  ----------  ------
+SLA303      10 AM  Beach 301   Glen            25
+SLA201      11 AM  Roman 216   Zeldin          60
+SLA191A     12 PM  Loft 310    Glen            45
+SLA449      12 PM  Slater 003  Zeldin          30
+SLA451      12 PM  James 325   Banks           90
+SLA101A     1 PM   Loft 206    Banks           40
+SLA191B     2 PM   Loft 310    Glen            40
+SLA304      2 PM   Beach 301   Singer          20
+SLA394      2 PM   Beach 201   Tyler           15
+SLA101B     3 PM   Loft 310    Banks           35
+SLA291      3 PM   Frank 119   Zeldin          50

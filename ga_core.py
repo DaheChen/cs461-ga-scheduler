@@ -183,11 +183,15 @@ def run_ga(
     population_size: int = 300,
     mutation_rate: float = 0.01,
     min_generations: int = 100,
-    max_generations: int = 300,
+    max_generations: int = 500,
     rng_seed: int | None = 42,
+    improvement_threshold: float = 1.0,  # Stop when improvement < 1%
+    mutation_halve_interval: int = 10,   # Check every N generations
 ) -> Tuple[Schedule, float, List[Dict[str, Any]]]:
     """
-    Run the genetic algorithm and return:
+    Run the genetic algorithm with adaptive mutation rate.
+
+    Returns:
         (best_schedule, best_fitness, fitness_history)
 
     fitness_history is a list of dicts with:
@@ -204,6 +208,10 @@ def run_ga(
     - Always run at least min_generations
     - Stop when the improvement in average fitness from one generation to the next
       is less than 1% (after min_generations), or when max_generations is reached.
+
+    Adaptive mutation:
+    - Every mutation_halve_interval generations, if average fitness improved,
+      halve the mutation rate (as per spec).
     """
     rng = random.Random(rng_seed)
 
@@ -213,6 +221,11 @@ def run_ga(
 
     history: List[Dict[str, Any]] = []
     prev_avg_fitness: float | None = None
+
+    # Track for adaptive mutation rate
+    current_mutation_rate = mutation_rate
+    avg_at_last_mutation_check: float | None = None
+    min_mutation_rate = 0.001  # Don't go below this
 
     for gen in range(max_generations):
         # --- Compute statistics for this generation ---
@@ -232,13 +245,27 @@ def run_ga(
                 "avg_fitness": avg_f,
                 "worst_fitness": worst_f,
                 "improvement_percent": improvement_percent,
-                "mutation_rate": mutation_rate,
+                "mutation_rate": current_mutation_rate,
             }
         )
 
+        # --- Progress output every 10 generations ---
+        if gen % 10 == 0:
+            print(f"  Gen {gen:3d} | best={best_f:.3f}, avg={avg_f:.3f}, "
+                  f"improv={improvement_percent:+.2f}%, mutation={current_mutation_rate:.4f}")
+
+        # --- Adaptive mutation rate (halve if improving) ---
+        if gen > 0 and gen % mutation_halve_interval == 0:
+            if avg_at_last_mutation_check is not None:
+                if avg_f > avg_at_last_mutation_check and current_mutation_rate > min_mutation_rate:
+                    # Still improving, halve the mutation rate
+                    current_mutation_rate = max(current_mutation_rate / 2, min_mutation_rate)
+                    print(f"  >> Mutation rate halved to {current_mutation_rate:.4f}")
+            avg_at_last_mutation_check = avg_f
+
         # --- Check stopping condition (after min_generations) ---
-        if gen + 1 >= min_generations and improvement_percent < 1.0:
-            # Average fitness is no longer improving by at least 1%
+        if gen + 1 >= min_generations and abs(improvement_percent) < improvement_threshold:
+            print(f"  >> Converged at generation {gen} (improvement {improvement_percent:.2f}% < {improvement_threshold}%)")
             break
 
         # --- Build selection CDF based on current fitnesses ---
@@ -258,9 +285,9 @@ def run_ga(
             child1 = crossover(parent1, parent2, rng)
             child2 = crossover(parent1, parent2, rng)
 
-            # Mutate children
-            mutate(child1, mutation_rate, rng)
-            mutate(child2, mutation_rate, rng)
+            # Mutate children with current (adaptive) mutation rate
+            mutate(child1, current_mutation_rate, rng)
+            mutate(child2, current_mutation_rate, rng)
 
             new_population.append(child1)
             if len(new_population) < population_size:

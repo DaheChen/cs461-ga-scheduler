@@ -253,8 +253,10 @@ This implementation covers the main requirements as follows:
       before selecting parents.
 
 - Mutation and rate adjustment
-  - A fixed mutation rate is used per run (e.g. 0.05 for debugging or 0.01 for larger runs).
-  - The code can be easily extended to adjust the mutation rate over time, as suggested in the assignment.
+  - Initial mutation rate is 0.01 as specified in the assignment.
+  - Adaptive mutation rate: every 10 generations, if fitness is still improving,
+    the mutation rate is halved (down to a minimum of 0.001).
+  - This follows the assignment instruction: "cut the mutation rate in half as long as results continue to improve."
 
 - Stopping condition based on average fitness improvement
   - The GA runs at least min_generations.

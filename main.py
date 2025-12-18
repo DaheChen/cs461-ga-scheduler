@@ -105,10 +105,10 @@ def main():
     # 3) GA configuration
     # ------------------------------------------------------------------
     print("[3] Genetic Algorithm configuration")
-    population_size = 80      # For debugging and demonstration
-    mutation_rate = 0.05
-    min_generations = 20
-    max_generations = 40
+    population_size = 300     # Required: N >= 250
+    mutation_rate = 0.01      # Required: start with 0.01
+    min_generations = 100     # Required: at least 100 generations
+    max_generations = 500     # Allow enough room to converge
     rng_seed = 42
 
     print(f"- population_size = {population_size}")
